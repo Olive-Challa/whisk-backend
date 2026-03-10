@@ -254,8 +254,12 @@ app.get('/health', (req, res) => {
 
 // Nearby vets endpoint
 app.get('/api/nearby-vets', async (req, res) => {
+  console.log('🔍 GOOGLE_PLACES_API_KEY exists:', !!process.env.GOOGLE_PLACES_API_KEY);
+  console.log('🔍 GOOGLE_PLACES_API_KEY value:', process.env.GOOGLE_PLACES_API_KEY ? 'SET' : 'NOT SET');
+  
   try {
     const { lat, lng } = req.query;
+    
 
     if (!lat || !lng) {
       return res.status(400).json({ error: 'Latitude and longitude required' });
