@@ -252,7 +252,71 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+// Nearby vets endpoint
+app.get('/api/nearby-vets', async (req, res) => {
+  try {
+    const { lat, lng } = req.query;
+
+    if (!lat || !lng) {
+      return res.status(400).json({ error: 'Latitude and longitude required' });
+    }
+
+    // Google Places API endpoint
+    const radius = 5000; // 5km radius
+    const type = 'veterinary_care';
+    const apiKey = process.env.GOOGLE_PLACES_API_KEY;
+
+    if (!apiKey) {
+      console.error('GOOGLE_PLACES_API_KEY not set');
+      return res.status(500).json({ error: 'Google Places API key not configured' });
+    }
+
+    const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=${radius}&type=${type}&key=${apiKey}`;
+
+    const response = await fetch(url);
+    const data = await response.json();
+
+    if (data.status !== 'OK' && data.status !== 'ZERO_RESULTS') {
+      console.error('Google Places API error:', data.status);
+      return res.status(500).json({ error: 'Failed to fetch nearby vets' });
+    }
+
+    const vets = data.results.map(place => ({
+      name: place.name,
+      address: place.vicinity,
+      latitude: place.geometry.location.lat,
+      longitude: place.geometry.location.lng,
+      rating: place.rating,
+      user_ratings_total: place.user_ratings_total,
+      place_id: place.place_id,
+      distance: calculateDistance(lat, lng, place.geometry.location.lat, place.geometry.location.lng),
+    }));
+
+    res.json({ vets });
+  } catch (error) {
+    console.error('Nearby vets error:', error);
+    res.status(500).json({ error: 'Failed to find nearby vets' });
+  }
+});
+
+// Helper function to calculate distance
+function calculateDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371; // Radius of the Earth in km
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = 
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLon/2) * Math.sin(dLon/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  const distance = R * c;
+  
+  if (distance < 1) {
+    return `${Math.round(distance * 1000)}m away`;
+  }
+  return `${distance.toFixed(1)}km away`;
+}
 app.listen(PORT, () => {
-  console.log(`🚀 Breed detection server running on port ${PORT}`);
-  console.log(`📸 Ready to detect breeds with comprehensive care info!`);
+  console.log(` Breed detection server running on port ${PORT}`);
+  console.log(` Ready to detect breeds with comprehensive care info!`);
 });
