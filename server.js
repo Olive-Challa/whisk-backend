@@ -29,29 +29,164 @@ app.post('/api/detect-breed', async (req, res) => {
 
     // Manual breed entry (no image)
     if (breedName) {
-      prompt = `Provide comprehensive information about the ${animalType} breed: ${breedName}
+      prompt = `Provide COMPREHENSIVE and DETAILED information about the ${animalType} breed: ${breedName}
 
-Please provide:
-1. Breed confirmation and overview
-2. Physical characteristics
-3. Temperament and personality
-4. Care requirements (grooming, exercise, diet)
-5. Health considerations
-6. Living environment needs
-7. Training tips
-8. Fun facts
+Please provide extensive details in the following categories:
 
-Format the response as JSON with these keys:
+1. BREED OVERVIEW
+   - Official breed name and classification
+   - Origin and history
+   - Size category (toy, small, medium, large, giant)
+   - Life expectancy
+
+2. PHYSICAL CHARACTERISTICS
+   - Height range (in inches/cm)
+   - Weight range (in lbs/kg)
+   - Coat type, length, and colors
+   - Distinctive physical features
+   - Body structure and build
+
+3. TEMPERAMENT & PERSONALITY
+   - General personality traits
+   - Energy level (low, moderate, high)
+   - Sociability with people
+   - Compatibility with children
+   - Compatibility with other pets
+   - Common behavioral traits
+
+4. GROOMING REQUIREMENTS
+   - Coat maintenance frequency
+   - Brushing needs (daily, weekly, etc.)
+   - Bathing frequency
+   - Nail trimming requirements
+   - Ear cleaning needs
+   - Dental care
+   - Professional grooming needs
+   - Shedding level
+
+5. EXERCISE & ACTIVITY
+   - Daily exercise requirements (minutes/hours)
+   - Exercise intensity level
+   - Recommended activities (walking, running, playing, swimming)
+   - Mental stimulation needs
+   - Space requirements (apartment-friendly, needs yard, etc.)
+
+6. DIETARY REQUIREMENTS
+   - Typical daily food amount by weight
+   - Recommended feeding frequency (puppies/kittens vs adults)
+   - Nutritional needs (protein, fat content)
+   - Foods to avoid
+   - Common dietary sensitivities
+   - Water requirements
+
+7. HEALTH CONSIDERATIONS
+   - Common genetic health issues
+   - Breed-specific health concerns
+   - Recommended health screenings
+   - Vaccination schedule considerations
+   - Average vet visit frequency
+   - Health monitoring tips
+
+8. TRAINING & INTELLIGENCE
+   - Intelligence level
+   - Trainability rating
+   - Recommended training methods
+   - Common training challenges
+   - Socialization needs
+   - Best age to start training
+
+9. LIVING ENVIRONMENT
+   - Ideal home type (apartment, house with yard, farm)
+   - Climate tolerance (heat/cold)
+   - Indoor vs outdoor preferences
+   - Noise level
+   - Good for first-time owners? (yes/no and why)
+
+10. FUN FACTS & TRIVIA
+    - Interesting historical facts
+    - Famous examples of this breed
+    - Unique abilities or talents
+    - Breed popularity rankings
+
+Format the response as JSON with these exact keys:
 {
-  "breed": "breed name",
-  "description": "brief overview",
-  "characteristics": "physical traits",
-  "temperament": "personality description",
-  "care": "care requirements",
-  "health": "health information",
-  "environment": "ideal living conditions",
-  "training": "training advice",
-  "funFacts": "interesting facts"
+  "breed": "Full breed name",
+  "overview": {
+    "classification": "",
+    "origin": "",
+    "size": "",
+    "lifespan": ""
+  },
+  "physicalCharacteristics": {
+    "height": "",
+    "weight": "",
+    "coat": "",
+    "colors": "",
+    "distinctiveFeatures": "",
+    "build": ""
+  },
+  "temperament": {
+    "personality": "",
+    "energyLevel": "",
+    "sociability": "",
+    "childFriendly": "",
+    "petFriendly": "",
+    "commonTraits": ""
+  },
+  "grooming": {
+    "coatMaintenance": "",
+    "brushing": "",
+    "bathing": "",
+    "nailTrimming": "",
+    "earCleaning": "",
+    "dentalCare": "",
+    "professionalGrooming": "",
+    "sheddingLevel": ""
+  },
+  "exercise": {
+    "dailyRequirements": "",
+    "intensity": "",
+    "recommendedActivities": "",
+    "mentalStimulation": "",
+    "spaceNeeds": ""
+  },
+  "diet": {
+    "dailyAmount": "",
+    "feedingFrequency": "",
+    "nutritionalNeeds": "",
+    "foodsToAvoid": "",
+    "sensitivities": "",
+    "waterNeeds": ""
+  },
+  "health": {
+    "commonIssues": "",
+    "breedSpecificConcerns": "",
+    "healthScreenings": "",
+    "vaccinationNotes": "",
+    "vetVisitFrequency": "",
+    "monitoringTips": ""
+  },
+  "training": {
+    "intelligenceLevel": "",
+    "trainability": "",
+    "recommendedMethods": "",
+    "challenges": "",
+    "socializationNeeds": "",
+    "startingAge": ""
+  },
+  "environment": {
+    "idealHome": "",
+    "climateTolerance": "",
+    "indoorOutdoor": "",
+    "noiseLevel": "",
+    "firstTimeOwner": ""
+  },
+  "funFacts": {
+    "history": "",
+    "famousExamples": "",
+    "uniqueAbilities": "",
+    "popularity": ""
+  }
 }`;
 
       messages = [
@@ -61,31 +196,148 @@ Format the response as JSON with these keys:
         }
       ];
     } 
-    // Image-based detection (existing code)
+    // Image-based detection
     else if (image) {
-      prompt = `Analyze this pet image and provide comprehensive information.
+      prompt = `Analyze this pet image and provide COMPREHENSIVE and DETAILED information.
 
-Please provide:
-1. Breed identification (be specific, if mixed breed mention likely breeds)
-2. Physical characteristics you observe
-3. General temperament for this breed
-4. Care requirements (grooming, exercise, diet)
-5. Health considerations
-6. Living environment needs
-7. Training tips
-8. Fun facts about the breed
+Please provide extensive details in the following categories:
 
-Format the response as JSON with these keys:
+1. BREED IDENTIFICATION & OVERVIEW
+   - Specific breed name (or likely breeds if mixed)
+   - What you observe in the image
+   - Size category estimation
+   - Approximate age if visible
+
+2. PHYSICAL CHARACTERISTICS
+   - Height range (in inches/cm)
+   - Weight range (in lbs/kg)
+   - Coat type, length, and colors visible
+   - Distinctive physical features you can see
+   - Body structure and build
+
+3. TEMPERAMENT & PERSONALITY
+   - General personality traits for this breed
+   - Energy level (low, moderate, high)
+   - Sociability with people
+   - Compatibility with children
+   - Compatibility with other pets
+
+4. GROOMING REQUIREMENTS
+   - Coat maintenance frequency
+   - Brushing needs (daily, weekly, etc.)
+   - Bathing frequency
+   - Nail trimming requirements
+   - Ear cleaning needs
+   - Dental care
+   - Professional grooming needs
+   - Shedding level
+
+5. EXERCISE & ACTIVITY
+   - Daily exercise requirements (minutes/hours)
+   - Exercise intensity level
+   - Recommended activities
+   - Mental stimulation needs
+   - Space requirements
+
+6. DIETARY REQUIREMENTS
+   - Typical daily food amount by weight
+   - Recommended feeding frequency
+   - Nutritional needs (protein, fat content)
+   - Foods to avoid
+   - Common dietary sensitivities
+
+7. HEALTH CONSIDERATIONS
+   - Common genetic health issues
+   - Breed-specific health concerns
+   - Recommended health screenings
+   - Health monitoring tips
+
+8. TRAINING & INTELLIGENCE
+   - Intelligence level
+   - Trainability rating
+   - Recommended training methods
+   - Common training challenges
+   - Socialization needs
+
+9. LIVING ENVIRONMENT
+   - Ideal home type
+   - Climate tolerance
+   - Indoor vs outdoor preferences
+   - Good for first-time owners?
+
+10. FUN FACTS
+    - Interesting facts about this breed
+    - Famous examples
+    - Unique abilities
+
+Format the response as JSON with these exact keys:
 {
-  "breed": "identified breed",
-  "description": "what you see in the image",
-  "characteristics": "physical traits",
-  "temperament": "personality description",
-  "care": "care requirements",
-  "health": "health information",
-  "environment": "ideal living conditions",
-  "training": "training advice",
-  "funFacts": "interesting facts"
+  "breed": "Identified breed name",
+  "overview": {
+    "observation": "",
+    "classification": "",
+    "size": "",
+    "estimatedAge": ""
+  },
+  "physicalCharacteristics": {
+    "height": "",
+    "weight": "",
+    "coat": "",
+    "colors": "",
+    "distinctiveFeatures": "",
+    "build": ""
+  },
+  "temperament": {
+    "personality": "",
+    "energyLevel": "",
+    "sociability": "",
+    "childFriendly": "",
+    "petFriendly": ""
+  },
+  "grooming": {
+    "coatMaintenance": "",
+    "brushing": "",
+    "bathing": "",
+    "nailTrimming": "",
+    "earCleaning": "",
+    "dentalCare": "",
+    "professionalGrooming": "",
+    "sheddingLevel": ""
+  },
+  "exercise": {
+    "dailyRequirements": "",
+    "intensity": "",
+    "recommendedActivities": "",
+    "mentalStimulation": "",
+    "spaceNeeds": ""
+  },
+  "diet": {
+    "dailyAmount": "",
+    "feedingFrequency": "",
+    "nutritionalNeeds": "",
+    "foodsToAvoid": "",
+    "sensitivities": ""
+  },
+  "health": {
+    "commonIssues": "",
+    "breedSpecificConcerns": "",
+    "healthScreenings": "",
+    "monitoringTips": ""
+  },
+  "training": {
+    "intelligenceLevel": "",
+    "trainability": "",
+    "recommendedMethods": "",
+    "challenges": "",
+    "socializationNeeds": ""
+  },
+  "environment": {
+    "idealHome": "",
+    "climateTolerance": "",
+    "indoorOutdoor": "",
+    "firstTimeOwner": ""
+  },
+  "funFacts": ""
 }`;
 
       messages = [
@@ -109,7 +361,7 @@ Format the response as JSON with these keys:
     const response = await openai.chat.completions.create({
       model: 'gpt-4o',
       messages: messages,
-      max_tokens: 1000,
+      max_tokens: 2500, // Increased for more detailed response
     });
 
     const content = response.choices[0].message.content;
@@ -138,7 +390,7 @@ app.get('/api/nearby-vets', async (req, res) => {
     }
 
     const googleApiKey = process.env.GOOGLE_PLACES_API_KEY;
-    const radius = 5000; // 5km radius
+    const radius = 5000;
     
     const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=${radius}&type=veterinary_care&key=${googleApiKey}`;
 
